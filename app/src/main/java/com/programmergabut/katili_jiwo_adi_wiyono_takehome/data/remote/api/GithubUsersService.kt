@@ -7,8 +7,8 @@ import retrofit2.http.Query
 
 
 interface GithubUsersService {
-    @GET("/search/users?q=")
-    suspend fun fetchGitHubUsers(
-        @Query("query") query: String
+    @GET("search/users")
+    fun fetchGitHubUsers(
+        @Query("q") query: String
     ): Call<UsersResponse>
 }

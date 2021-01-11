@@ -1,7 +1,6 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseViewModel
@@ -10,17 +9,17 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteent
 import kotlinx.coroutines.launch
 
 class UserViewModel @ViewModelInject constructor(
-    private val repository: Repository
+    val repository: Repository
 ): BaseViewModel() {
 
     private var message: String = ""
+    fun getMessage() = message
+
     private var users: List<Item> = listOf()
+    fun getUsers() = users
 
     private var _usersStatus: MutableLiveData<Int> = MutableLiveData()
     val usersStatus = _usersStatus
-
-    fun getMessage() = message
-    fun getUsers() = users
 
     fun fetchListUser(query: String) {
         viewModelScope.launch {

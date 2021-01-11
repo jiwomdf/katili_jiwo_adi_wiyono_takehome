@@ -12,6 +12,7 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteent
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.ListUsersBinding
 import javax.inject.Inject
 
+
 class UserAdapter @Inject constructor(
     private val glide: RequestManager
 ): RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
@@ -42,11 +43,14 @@ class UserAdapter @Inject constructor(
         holder.bind(listItem[position])
     }
 
-    override fun getItemCount(): Int = listItem.size
+    override fun getItemCount(): Int{
+        return listItem.size
+    }
 
     inner class UserViewHolder(private val binding: ListUsersBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Item){
-            glide.load(data).into(binding.ivUser)
+            glide.load(data.avatarUrl).into(binding.ivUser)
+            binding.tvUserName.text = data.login
         }
     }
 }

@@ -18,6 +18,7 @@
             android:contentDescription="@string/user_blank_profile" />
 
         <TextView
+            android:id="@+id/tv_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"

@@ -18,10 +18,13 @@ class RepositoryImpl @Inject constructor(
                 response = execute(githubUsersService.fetchGitHubUsers(
                     query
                 ))
+                response.status = "1"
+                response.message = "Success"
             }
             catch (ex: Exception){
                 response = UsersResponse()
                 response.status = "-1"
+                response.message = ex.message.toString()
             }
             response
         }

@@ -56,6 +56,6 @@ object NetworkModule {
     @Singleton
     fun provideGithubUserService(retrofit: Retrofit): GithubUsersService = retrofit.create(
         GithubUsersService::class.java
-    )
+    ) as GithubUsersService
 
 }

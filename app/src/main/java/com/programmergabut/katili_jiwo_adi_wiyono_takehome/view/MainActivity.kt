@@ -16,13 +16,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity @Inject constructor (
-    private val userAdapter: UserAdapter
-): BaseActivity<ActivityMainBinding, UserViewModel>(
+class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
     R.layout.activity_main,
     UserViewModel::class.java
 ) {
 
+    @Inject lateinit var userAdapter: UserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +35,10 @@ class MainActivity @Inject constructor (
         super.setListener()
 
         viewModel.usersStatus.observe(this, { status ->
-
             when(status){
                 BaseViewModel.SUCCESS -> {
-                    userAdapter.listItem = viewModel.getUsers()
+                    val data = viewModel.getUsers()
+                    userAdapter.listItem = data
                     userAdapter.notifyDataSetChanged()
                 }
                 BaseViewModel.ERROR -> {
