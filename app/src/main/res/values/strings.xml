@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">katili_jiwo_adi_wiyono_takehome</string>
+    <string name="search_github_users">Search Github users</string>
+
+    <!--Message-->
+    <string name="text_error_title">Error Occurred</string>
+    <string name="text_error_dsc">Sorry.. there is an error, please try again</string>
+
+    <!--  -->
+    <string name="oke">Oke</string>
+
+    <!--  -->
+    <string name="user_blank_profile">user_blank_profile</string>
+</resources>
