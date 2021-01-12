@@ -5,6 +5,10 @@ import com.google.gson.annotations.SerializedName
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseResponse
 
 class UsersResponse : BaseResponse() {
+    @SerializedName("message")
+    var message: String = ""
+    @SerializedName("documentation_url")
+    var documentationUrl: String = ""
     @SerializedName("incomplete_results")
     var incompleteResults: Boolean = false
     @SerializedName("items")

@@ -1,6 +1,7 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.data
 
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseRepository
+import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseResponse
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.api.GithubUsersService
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteentity.users.UsersResponse
 import kotlinx.coroutines.*
@@ -15,16 +16,32 @@ class RepositoryImpl @Inject constructor(
         return CoroutineScope(Dispatchers.IO).async {
             lateinit var response: UsersResponse
             try {
-                response = execute(githubUsersService.fetchGitHubUsers(
-                    query, page, per_page
-                ))
-                response.status = "1"
-                response.message = "Success"
+
+                val call = execute(githubUsersService.fetchGitHubUsers(query, page, per_page))
+
+                when {
+                    call.isSuccessful -> {
+                        response = call.body()!!
+                        response.statusResponse = "1"
+                        response.messageResponse = call.message()
+                    }
+                    call.code() == 403 -> {
+                        response = UsersResponse()
+                        response.statusResponse = "2"
+                        response.messageResponse = call.message()
+                    }
+                    else -> {
+                        response = UsersResponse()
+                        response.statusResponse = "-1"
+                        response.messageResponse = call.message()
+                    }
+                }
+
             }
             catch (ex: Exception){
                 response = UsersResponse()
-                response.status = "-1"
-                response.message = ex.message.toString()
+                response.statusResponse = "-1"
+                response.messageResponse = ex.message.toString()
             }
             response
         }

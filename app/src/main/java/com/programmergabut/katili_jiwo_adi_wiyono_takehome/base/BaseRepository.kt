@@ -4,21 +4,23 @@ import android.util.Log
 import com.google.gson.Gson
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.BuildConfig
 import retrofit2.Call
+import retrofit2.Response
 
-abstract class BaseRepository {
-    protected fun<T : BaseResponse> execute(call : Call<T>) : T {
+abstract class BaseRepository{
+
+    protected fun<T : BaseResponse> execute(call : Call<T>) : Response<T> {
         try{
             val response = call.execute()
             return when(response.isSuccessful){
                 true -> {
                     if(BuildConfig.BUILD_TYPE == ("debug"))
                         Log.d("<RES>", Gson().toJson(response.body()!!))
-                    response.body()!!
+                    response
                 }
                 false -> {
                     if(BuildConfig.BUILD_TYPE == "debug")
                         Log.d("<RES>", response.message())
-                    throw Exception()
+                    response
                 }
             }
         }

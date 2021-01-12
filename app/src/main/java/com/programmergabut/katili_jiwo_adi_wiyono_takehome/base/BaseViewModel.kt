@@ -10,6 +10,7 @@ abstract class BaseViewModel: ViewModel() {
 
         const val SUCCESS = 3
         const val ERROR = 4
+        const val LIMIT = 5
     }
     val loading : MutableLiveData<Int> = MutableLiveData()
 }

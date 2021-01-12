@@ -26,11 +26,11 @@ class UserViewModel @ViewModelInject constructor(
             setSearchLoader(true, page)
             val response = repository.fetchUsers(query, page.toString(), per_page.toString()).await()
 
-            when(response.status.toInt()){
+            when(response.statusResponse.toInt()){
                 1 -> {
                     if(response != null && !response.items.isNullOrEmpty()){
                         users = response.items
-                        message = response.message
+                        message = response.messageResponse
                         _usersStatus.postValue(SUCCESS)
                     }
                     else{
@@ -40,11 +40,15 @@ class UserViewModel @ViewModelInject constructor(
                 }
                 -1 -> {
                     _usersStatus.postValue(ERROR)
-                    message = response.message
+                    message = response.messageResponse
+                }
+                2 -> {
+                    _usersStatus.postValue(LIMIT)
+                    message = response.messageResponse
                 }
                 else -> {
                     _usersStatus.postValue(ERROR)
-                    message = response.message
+                    message = response.messageResponse
                 }
             }
 

@@ -70,10 +70,11 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
 
 
     protected fun showErrorBottomSheet(
-        title : String = resources.getString(R.string.text_error_title),
+        title: String = resources.getString(R.string.text_error_title),
         description: String = resources.getString(R.string.text_error_dsc),
         isCancelable: Boolean = true,
-        isFinish: Boolean = false
+        isFinish: Boolean = false,
+        callback: (() -> Unit)? = null
     ) {
 
         val dialogBinding = DataBindingUtil.inflate<LayoutErrorBottomsheetBinding>(
@@ -96,6 +97,8 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
         dialogBinding.btnOk.setOnClickListener {
             if(isFinish)
                 finish()
+
+            callback?.invoke()
             dialog.dismiss()
         }
     }
