@@ -11,24 +11,23 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(ActivityComponent::class)
 object AdapterModule {
 
-    @Singleton
     @Provides
     fun provideGlideInstance(
-        @ApplicationContext context: Context,
+        @ActivityContext context: Context,
     ) = Glide.with(context).setDefaultRequestOptions(
         RequestOptions()
             .placeholder(R.drawable.ic_baseline_account__24)
             .error(R.drawable.ic_baseline_account__24)
     )
 
-    @Singleton
     @Provides
     fun provideUserAdapter(requestManager: RequestManager) = UserAdapter(requestManager)
 

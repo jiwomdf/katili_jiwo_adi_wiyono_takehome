@@ -5,6 +5,6 @@ import kotlinx.coroutines.Deferred
 
 interface Repository {
 
-    suspend fun fetchUsers(query: String): Deferred<UsersResponse>
+    suspend fun fetchUsers(query: String, page: String, per_page: String): Deferred<UsersResponse>
 
 }

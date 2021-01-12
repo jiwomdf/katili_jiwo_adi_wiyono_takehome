@@ -21,10 +21,10 @@ class UserViewModel @ViewModelInject constructor(
     private var _usersStatus: MutableLiveData<Int> = MutableLiveData()
     val usersStatus = _usersStatus
 
-    fun fetchListUser(query: String) {
+    fun fetchListUser(query: String, page: String, per_page: String) {
         viewModelScope.launch {
             loading.postValue(SHOW_LOADING)
-            val response = repository.fetchUsers(query).await()
+            val response = repository.fetchUsers(query, page, per_page).await()
 
             when(response.status.toInt()){
                 1 -> {

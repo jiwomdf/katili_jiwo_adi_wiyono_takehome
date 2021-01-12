@@ -11,12 +11,12 @@ class RepositoryImpl @Inject constructor(
     private val githubUsersService: GithubUsersService
 ): BaseRepository(), Repository {
 
-    override suspend fun fetchUsers(query: String): Deferred<UsersResponse> {
+    override suspend fun fetchUsers(query: String, page: String, per_page: String): Deferred<UsersResponse> {
         return CoroutineScope(Dispatchers.IO).async {
             lateinit var response: UsersResponse
             try {
                 response = execute(githubUsersService.fetchGitHubUsers(
-                    query
+                    query, page, per_page
                 ))
                 response.status = "1"
                 response.message = "Success"

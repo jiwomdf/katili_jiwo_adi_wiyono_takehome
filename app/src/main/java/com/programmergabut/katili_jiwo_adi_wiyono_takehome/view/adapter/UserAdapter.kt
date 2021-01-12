@@ -1,5 +1,7 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
