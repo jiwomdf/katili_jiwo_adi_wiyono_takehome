@@ -63,6 +63,12 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
         return super.dispatchTouchEvent(ev)
     }
 
+    protected fun hideSoftKeyboard() {
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+    }
+
+
     protected fun showErrorBottomSheet(
         title : String = resources.getString(R.string.text_error_title),
         description: String = resources.getString(R.string.text_error_dsc),
@@ -75,23 +81,22 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
         )
         val dialog = BottomSheetDialog(this)
 
-        dialog.apply {
-            window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            setCancelable(isCancelable)
-            setContentView(dialogBinding.root)
-        }
-
         dialogBinding.apply {
             tvTitle.text = title
             tvDesc.text = description
         }
 
-        dialog.show()
+        dialog.apply {
+            window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            setCancelable(isCancelable)
+            setContentView(dialogBinding.root)
+            show()
+        }
 
         dialogBinding.btnOk.setOnClickListener {
             if(isFinish)
                 finish()
-            dialog.hide()
+            dialog.dismiss()
         }
     }
 

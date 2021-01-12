@@ -11,43 +11,60 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.R
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteentity.users.Item
+import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.LayoutBottomLoaderBinding
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.ListUsersBinding
 import javax.inject.Inject
 
 
 class UserAdapter @Inject constructor(
     private val glide: RequestManager
-): RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val diffCallback = object: DiffUtil.ItemCallback<Item>(){
-        override fun areItemsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
+    private val VIEW_TYPE_LOADING = 0
+    private val VIEW_TYPE_ITEM = 1
 
-        override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
-    }
+//    private val diffCallback = object: DiffUtil.ItemCallback<Item>(){
+//        override fun areItemsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
+//
+//        override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
+//    }
+//
+//    private val differ = AsyncListDiffer(this, diffCallback)
 
-    private val differ = AsyncListDiffer(this, diffCallback)
-
-    var listItem : List<Item>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
+    var listItem : MutableList<Item?> = mutableListOf()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): UserAdapter.UserViewHolder {
-        val binding = DataBindingUtil.inflate<ListUsersBinding>(
-            LayoutInflater.from(parent.context), R.layout.list_users, parent, false
-        )
-        return UserViewHolder(binding)
+    ): RecyclerView.ViewHolder {
+        return when (viewType) {
+            VIEW_TYPE_ITEM -> {
+                UserViewHolder(DataBindingUtil.inflate(
+                    LayoutInflater.from(parent.context), R.layout.list_users, parent, false
+                ))
+            }
+            else -> {
+                BottomLoaderViewHolder(DataBindingUtil.inflate(
+                    LayoutInflater.from(parent.context), R.layout.layout_bottom_loader, parent, false
+                ))
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: UserAdapter.UserViewHolder, position: Int) {
-        holder.bind(listItem[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(holder.itemViewType){
+            VIEW_TYPE_ITEM -> {
+
+                    (holder as UserViewHolder).bind(listItem[position]!!)
+            }
+        }
     }
 
-    override fun getItemCount(): Int{
-        return listItem.size
+    override fun getItemViewType(position: Int): Int {
+        return if(listItem[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
     }
+
+    override fun getItemCount(): Int = listItem.size
 
     inner class UserViewHolder(private val binding: ListUsersBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Item){
@@ -55,4 +72,6 @@ class UserAdapter @Inject constructor(
             binding.tvUserName.text = data.login
         }
     }
+
+    inner class BottomLoaderViewHolder(private val binding: LayoutBottomLoaderBinding): RecyclerView.ViewHolder(binding.root)
 }

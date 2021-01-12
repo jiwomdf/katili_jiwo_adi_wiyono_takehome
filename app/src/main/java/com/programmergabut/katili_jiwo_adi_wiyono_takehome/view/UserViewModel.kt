@@ -9,40 +9,57 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteent
 import kotlinx.coroutines.launch
 
 class UserViewModel @ViewModelInject constructor(
-    val repository: Repository
+    private val repository: Repository
 ): BaseViewModel() {
 
     private var message: String = ""
     fun getMessage() = message
 
-    private var users: List<Item> = listOf()
+    private var users: List<Item?> = listOf()
     fun getUsers() = users
 
     private var _usersStatus: MutableLiveData<Int> = MutableLiveData()
     val usersStatus = _usersStatus
 
-    fun fetchListUser(query: String, page: String, per_page: String) {
+    fun fetchListUser(query: String, page: Int, per_page: Int) {
         viewModelScope.launch {
-            loading.postValue(SHOW_LOADING)
-            val response = repository.fetchUsers(query, page, per_page).await()
+            setSearchLoader(true, page)
+            val response = repository.fetchUsers(query, page.toString(), per_page.toString()).await()
 
             when(response.status.toInt()){
                 1 -> {
-                    users = response.items
-                    message = response.message
-                    _usersStatus.postValue(SUCCESS)
+                    if(response != null && !response.items.isNullOrEmpty()){
+                        users = response.items
+                        message = response.message
+                        _usersStatus.postValue(SUCCESS)
+                    }
+                    else{
+                        _usersStatus.postValue(ERROR)
+                        //message = response.message
+                    }
                 }
                 -1 -> {
                     _usersStatus.postValue(ERROR)
                     message = response.message
                 }
                 else -> {
-
+                    _usersStatus.postValue(ERROR)
+                    message = response.message
                 }
             }
 
-            loading.postValue(REMOVE_LOADING)
+            setSearchLoader(false, page)
         }
+    }
+
+    private fun setSearchLoader(isLoading: Boolean, page: Int){
+        if(page > 1)
+            return
+
+        if(isLoading)
+            loading.postValue(SHOW_LOADING)
+        else
+            loading.postValue(REMOVE_LOADING)
     }
 
 
