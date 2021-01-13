@@ -2,7 +2,10 @@ package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.cachedIn
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseViewModel
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.Repository
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteentity.users.Item
@@ -12,7 +15,20 @@ class UserViewModel @ViewModelInject constructor(
     private val repository: Repository
 ): BaseViewModel() {
 
-    private var message: String = ""
+    companion object {
+        const val DEFAULT_QUERY = "jiwo"
+    }
+
+    private val currentQuery = MutableLiveData(DEFAULT_QUERY)
+    val userss = currentQuery.switchMap { queryString ->
+        repository.getSearchResult(queryString).cachedIn(viewModelScope)
+    }
+    fun searchPhoto(query: String){
+        currentQuery.value = query
+    }
+
+
+    /* private var message: String = ""
     fun getMessage() = message
 
     private var users: List<Item?> = listOf()
@@ -64,7 +80,7 @@ class UserViewModel @ViewModelInject constructor(
             loading.postValue(SHOW_LOADING)
         else
             loading.postValue(REMOVE_LOADING)
-    }
+    } */
 
 
 }

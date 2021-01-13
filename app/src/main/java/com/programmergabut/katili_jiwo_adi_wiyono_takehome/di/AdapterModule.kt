@@ -5,7 +5,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.R
-import com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter.UserAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,8 +26,5 @@ object AdapterModule {
             .placeholder(R.drawable.ic_baseline_account__24)
             .error(R.drawable.ic_baseline_account__24)
     )
-
-    @Provides
-    fun provideUserAdapter(requestManager: RequestManager) = UserAdapter(requestManager)
 
 }

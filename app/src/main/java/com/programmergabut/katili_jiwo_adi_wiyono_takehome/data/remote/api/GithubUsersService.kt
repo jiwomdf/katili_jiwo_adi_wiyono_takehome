@@ -10,9 +10,9 @@ import retrofit2.http.Query
 
 interface GithubUsersService {
     @GET("search/users")
-    fun fetchGitHubUsers(
+    suspend fun fetchGitHubUsers(
         @Query("q") query: String,
         @Query("page") page: String,
         @Query("per_page") per_page: String
-    ): Call<UsersResponse>
+    ): Response<UsersResponse>
 }

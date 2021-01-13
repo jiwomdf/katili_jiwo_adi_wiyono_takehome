@@ -44,13 +44,13 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
     protected open fun setListener(){
         (viewModel as BaseViewModel).loading.observe(this,{ status ->
             when(status){
-                BaseViewModel.SHOW_LOADING -> loading(true)
-                BaseViewModel.REMOVE_LOADING -> loading(false)
+                BaseViewModel.SHOW_LOADING -> showLoading(true)
+                BaseViewModel.REMOVE_LOADING -> showLoading(false)
             }
         })
     }
 
-    private fun loading(isShow : Boolean){
+    protected fun showLoading(isShow : Boolean){
         root.removeView(loader)
         if(isShow){
             root.addView(loader)

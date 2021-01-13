@@ -13,4 +13,5 @@
 
     <!-- glide -->
     <string name="user_blank_profile">user_blank_profile</string>
+    <string name="retry">Retry</string>
 </resources>

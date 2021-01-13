@@ -16,20 +16,12 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.ListUsers
 import javax.inject.Inject
 
 
-class UserAdapter @Inject constructor(
+/* class UserAdapter @Inject constructor(
     private val glide: RequestManager
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val VIEW_TYPE_LOADING = 0
     private val VIEW_TYPE_ITEM = 1
-
-//    private val diffCallback = object: DiffUtil.ItemCallback<Item>(){
-//        override fun areItemsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
-//
-//        override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
-//    }
-//
-//    private val differ = AsyncListDiffer(this, diffCallback)
 
     var listItem : MutableList<Item?> = mutableListOf()
 
@@ -54,8 +46,7 @@ class UserAdapter @Inject constructor(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder.itemViewType){
             VIEW_TYPE_ITEM -> {
-
-                    (holder as UserViewHolder).bind(listItem[position]!!)
+                (holder as UserViewHolder).bind(listItem[position]!!)
             }
         }
     }
@@ -74,4 +65,4 @@ class UserAdapter @Inject constructor(
     }
 
     inner class BottomLoaderViewHolder(private val binding: LayoutBottomLoaderBinding): RecyclerView.ViewHolder(binding.root)
-}
+} */
