@@ -35,6 +35,8 @@ class FooterAdapter(
 
         init {
             binding.ivRetry.setOnClickListener {
+                binding.ivRetry.isVisible = false
+                binding.pbFooter.isVisible = true
                 retry.invoke()
             }
         }
@@ -47,8 +49,8 @@ class FooterAdapter(
                 }
                 is LoadState.Error -> {
                     showError.invoke(loadState)
-                    binding.ivRetry.isVisible = true
                     binding.pbFooter.isVisible = false
+                    binding.ivRetry.isVisible = true
                 }
                 is LoadState.NotLoading -> {
                     binding.pbFooter.isVisible = false
