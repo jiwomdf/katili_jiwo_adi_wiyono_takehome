@@ -22,11 +22,10 @@
             tools:context=".view.MainActivity">
 
             <EditText
-                android:id="@+id/et_serch"
+                android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:maxLines="1"
-                android:completionThreshold="1"
                 android:inputType="text"
                 android:singleLine="true"
                 android:imeOptions="actionSearch"

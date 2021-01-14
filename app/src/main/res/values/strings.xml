@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">katili_jiwo_adi_wiyono_takehome</string>
-    <string name="search_github_users">Search Github users</string>
+    <string name="app_name">Katili Jiwo Adi Wiyono</string>
 
     <!-- Message -->
     <string name="user_not_found">User not found</string>
@@ -18,6 +17,7 @@
     <!-- glide -->
     <string name="user_blank_profile">user_blank_profile</string>
 
+    <string name="search_github_users">Search Github users</string>
     <string name="oke">Oke</string>
     <string name="retry">Retry</string>
 

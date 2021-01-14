@@ -74,9 +74,9 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
             }
         }
 
-        binding.etSerch.setOnEditorActionListener{ _, keyCode, _ ->
+        binding.etSearch.setOnEditorActionListener{ _, keyCode, _ ->
             if (keyCode == EditorInfo.IME_ACTION_SEARCH) {
-                val searchString = binding.etSerch.text.toString().trim()
+                val searchString = binding.etSearch.text.toString().trim()
                 if(searchString.isEmpty()){
                     showErrorBottomSheet(getString(R.string.search_string_empty_title), getString(R.string.search_string_empty_dsc))
                     return@setOnEditorActionListener false
