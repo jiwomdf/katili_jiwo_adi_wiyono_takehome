@@ -19,6 +19,7 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter.UserAdap
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.io.IOException
+import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,9 +44,9 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
             userAdapter.submitData(lifecycle, result)
         })
 
-        userAdapter.addLoadStateListener { loadState ->
-            if(loadState.source.refresh is LoadState.NotLoading &&
-                loadState.append.endOfPaginationReached &&
+        userAdapter.addLoadStateListener { combinedLoadStates ->
+            if(combinedLoadStates.source.refresh is LoadState.NotLoading &&
+                combinedLoadStates.append.endOfPaginationReached &&
                 userAdapter.itemCount < 1){
                 setContentComponentVisibility(isRvGithubVisible = false)
                 if(lastErrMsg.isEmpty())
@@ -57,7 +58,7 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
                 setContentComponentVisibility(isRvGithubVisible = true)
             }
 
-            when (loadState.source.refresh) {
+            when (combinedLoadStates.source.refresh) {
                 is LoadState.Loading -> showLoading(true)
                 is LoadState.NotLoading -> {
                     showLoading(false)
@@ -67,8 +68,8 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
                 }
                 is LoadState.Error -> {
                     resetData()
-                    showSearchError((loadState.source.refresh as LoadState.Error))
-                    lastErrMsg = getErrorMsg((loadState.source.refresh as LoadState.Error))
+                    showSearchError(combinedLoadStates.source.refresh)
+                    lastErrMsg = getErrorMsg(combinedLoadStates.source.refresh)
                 }
             }
         }
@@ -117,47 +118,61 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
     }
 
     private fun showSearchError(loadState: LoadState){
-        when (val err = (loadState as LoadState.Error).error) {
-            is HttpException -> {
-                when (err.code()) {
-                    403 -> showErrorBottomSheet(title = getString(R.string.error_403_title),
-                        description = getString(R.string.error_403_dsc))
-                    else -> showErrorBottomSheet(description = err.message.toString(), isCancelable = true,)
+        try {
+            when (val err = (loadState as LoadState.Error).error) {
+                is HttpException -> {
+                    when (err.code()) {
+                        403 -> showErrorBottomSheet(title = getString(R.string.error_403_title),
+                            description = getString(R.string.error_403_dsc))
+                        else -> showErrorBottomSheet(description = err.message.toString(), isCancelable = true,)
+                    }
                 }
+                is IOException -> showErrorBottomSheet(title = getString(R.string.error_unknown_host_connection_title),
+                    description = getString(R.string.error_unknown_host_connection_dsc))
+                else -> showErrorBottomSheet()
+            }.also {
+                showLoading(false)
             }
-            is IOException -> showErrorBottomSheet(title = getString(R.string.error_unknown_host_connection_title),
-                description = getString(R.string.error_unknown_host_connection_dsc))
-            else -> showErrorBottomSheet()
-        }.also {
-            showLoading(false)
+        }
+        catch (ex: Exception){
+            showErrorBottomSheet()
         }
     }
 
     private fun showScrollError(loadState: LoadState) {
         if(isFromSearching)
             return
-        when (val err = (loadState as LoadState.Error).error) {
-            is HttpException -> {
-                when (err.code()) {
-                    403 -> Toast.makeText(this, getString(R.string.error_403_dsc), Toast.LENGTH_SHORT).show()
-                    else -> Toast.makeText(this, err.message().toString(), Toast.LENGTH_SHORT).show()
+        try {
+            when (val err = (loadState as LoadState.Error).error) {
+                is HttpException -> {
+                    when (err.code()) {
+                        403 -> Toast.makeText(this, getString(R.string.error_403_dsc), Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(this, err.message().toString(), Toast.LENGTH_SHORT).show()
+                    }
                 }
+                is IOException -> Toast.makeText(this, getString(R.string.error_unknown_host_connection_dsc), Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(this, resources.getString(R.string.text_error_title), Toast.LENGTH_SHORT).show()
             }
-            is IOException -> Toast.makeText(this, getString(R.string.error_unknown_host_connection_dsc), Toast.LENGTH_SHORT).show()
-            else -> Toast.makeText(this, resources.getString(R.string.text_error_title), Toast.LENGTH_SHORT).show()
+        }
+        catch (ex: Exception){
+            Toast.makeText(this, resources.getString(R.string.text_error_title), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun getErrorMsg(loadState: LoadState): String {
-        return when (val err = (loadState as LoadState.Error).error) {
-            is HttpException -> {
-                when (err.code()) {
-                    403 -> getString(R.string.error_403_dsc)
-                    else -> err.message().toString()
+        return try {
+            when (val err = (loadState as LoadState.Error).error) {
+                is HttpException -> {
+                    when (err.code()) {
+                        403 -> getString(R.string.error_403_dsc)
+                        else -> err.message().toString()
+                    }
                 }
+                is IOException -> getString(R.string.error_unknown_host_connection_dsc)
+                else -> resources.getString(R.string.text_error_title)
             }
-            is IOException -> getString(R.string.error_unknown_host_connection_dsc)
-            else -> resources.getString(R.string.text_error_title)
+        } catch (ex: Exception){
+            resources.getString(R.string.text_error_title)
         }
     }
 
