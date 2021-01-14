@@ -1,68 +1,44 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import com.programmergabut.katili_jiwo_adi_wiyono_takehome.R
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteentity.users.Item
-import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.LayoutBottomLoaderBinding
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.ListUsersBinding
 import javax.inject.Inject
 
-
-/* class UserAdapter @Inject constructor(
+class UserAdapter @Inject constructor(
     private val glide: RequestManager
-): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+): PagingDataAdapter<Item, UserAdapter.UsersViewHolder>(USERS_COMPARATOR) {
 
-    private val VIEW_TYPE_LOADING = 0
-    private val VIEW_TYPE_ITEM = 1
+    companion object {
+        private val USERS_COMPARATOR = object : DiffUtil.ItemCallback<Item>(){
+            override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean = oldItem.id == newItem.id
 
-    var listItem : MutableList<Item?> = mutableListOf()
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): RecyclerView.ViewHolder {
-        return when (viewType) {
-            VIEW_TYPE_ITEM -> {
-                UserViewHolder(DataBindingUtil.inflate(
-                    LayoutInflater.from(parent.context), R.layout.list_users, parent, false
-                ))
-            }
-            else -> {
-                BottomLoaderViewHolder(DataBindingUtil.inflate(
-                    LayoutInflater.from(parent.context), R.layout.layout_bottom_loader, parent, false
-                ))
-            }
+            override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean = oldItem == newItem
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder.itemViewType){
-            VIEW_TYPE_ITEM -> {
-                (holder as UserViewHolder).bind(listItem[position]!!)
-            }
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersViewHolder {
+        val binding = ListUsersBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return UsersViewHolder(binding)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if(listItem[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+    override fun onBindViewHolder(holder: UsersViewHolder, position: Int) {
+        val currItem = getItem(position)
+
+        holder.bind(currItem!!)
     }
 
-    override fun getItemCount(): Int = listItem.size
-
-    inner class UserViewHolder(private val binding: ListUsersBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class UsersViewHolder(private val binding: ListUsersBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(data: Item){
             glide.load(data.avatarUrl).into(binding.ivUser)
             binding.tvUserName.text = data.login
         }
     }
 
-    inner class BottomLoaderViewHolder(private val binding: LayoutBottomLoaderBinding): RecyclerView.ViewHolder(binding.root)
-} */
+}

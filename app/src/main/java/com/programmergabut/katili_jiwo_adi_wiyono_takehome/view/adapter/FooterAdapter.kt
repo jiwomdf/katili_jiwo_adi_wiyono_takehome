@@ -8,7 +8,10 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.ListFooterBinding
 
-class FooterAdapter(private val retry: () -> Unit): LoadStateAdapter<FooterAdapter.LoadStateViewHolder>() {
+class FooterAdapter(
+    private val retry: () -> Unit,
+    private val showError: (loadState: LoadState) -> Unit
+): LoadStateAdapter<FooterAdapter.LoadStateViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder {
         val binding = ListFooterBinding.inflate(
@@ -16,7 +19,6 @@ class FooterAdapter(private val retry: () -> Unit): LoadStateAdapter<FooterAdapt
             parent,
             false
         )
-
         return LoadStateViewHolder(binding)
     }
 
@@ -28,15 +30,26 @@ class FooterAdapter(private val retry: () -> Unit): LoadStateAdapter<FooterAdapt
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.llRetry.setOnClickListener {
+            binding.ivRetry.setOnClickListener {
                 retry.invoke()
             }
         }
 
         fun bind(loadState: LoadState) {
-            binding.apply {
-                pbFooter.isVisible = loadState is LoadState.Loading
-                llRetry.isVisible = loadState !is LoadState.Loading
+            when(loadState){
+                is LoadState.Loading -> {
+                    binding.ivRetry.isVisible = false
+                    binding.pbFooter.isVisible = true
+                }
+                is LoadState.Error -> {
+                    showError.invoke(loadState)
+                    binding.ivRetry.isVisible = true
+                    binding.pbFooter.isVisible = false
+                }
+                is LoadState.NotLoading -> {
+                    binding.pbFooter.isVisible = false
+                    binding.ivRetry.isVisible = false
+                }
             }
         }
     }

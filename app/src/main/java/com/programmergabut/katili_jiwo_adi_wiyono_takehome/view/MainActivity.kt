@@ -6,6 +6,7 @@ package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view
 
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -14,8 +15,11 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.R
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseActivity
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.databinding.ActivityMainBinding
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter.FooterAdapter
-import com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter.UserrAdapter
+import com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter.UserAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,145 +28,66 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
     UserViewModel::class.java
 ) {
 
-    //@Inject lateinit var userAdapter: UserAdapter
-    @Inject lateinit var userrAdapter: UserrAdapter
-    private val perPage = 10
-    private var currPage = 1
-    private var lastSearchedString = ""
-    private var isHasReachBottomOnce = false
+    @Inject lateinit var userAdapter: UserAdapter
+    private var lastErrMsg = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //setupRecyclerView()
-        setupRecyclerView2()
+        setupRecyclerView()
     }
 
     override fun setListener() {
         super.setListener()
 
-        viewModel.userss.observe(this, { result ->
-            userrAdapter.submitData(lifecycle, result)
+        viewModel.users.observe(this, { result ->
+            userAdapter.submitData(lifecycle, result)
         })
 
-        userrAdapter.addLoadStateListener { loadState ->
-
-            when(loadState.source.refresh){
-                is LoadState.Loading -> {
-                    showLoading(true)
-                }
-                is LoadState.NotLoading -> {
-                    showLoading(false)
-                }
-                is LoadState.Error -> {
-                    showErrorBottomSheet{
-                        userrAdapter.retry()
-                    }
-                }
-            }
+        userAdapter.addLoadStateListener { loadState ->
 
             if(loadState.source.refresh is LoadState.NotLoading &&
                 loadState.append.endOfPaginationReached &&
-                    userrAdapter.itemCount < 1){
-
+                userAdapter.itemCount < 1){
                 binding.rvGithubUser.isVisible = false
                 binding.tvInfo.isVisible = true
+
+                if(lastErrMsg.isEmpty())
+                    binding.tvInfo.text = getString(R.string.user_not_found)
+                else
+                    binding.tvInfo.text = lastErrMsg
             }
             else{
                 binding.rvGithubUser.isVisible = true
                 binding.tvInfo.isVisible = false
             }
 
+            when(loadState.source.refresh){
+                is LoadState.Loading -> showLoading(true)
+                is LoadState.NotLoading -> {
+                    lastErrMsg = ""
+                    showLoading(false)
+                }
+                is LoadState.Error -> {
+                    resetData()
+                    showSearchError((loadState.source.refresh as LoadState.Error))
+                    lastErrMsg = getErrorMsg((loadState.source.refresh as LoadState.Error))
+                }
+            }
+
         }
-
-        /* viewModel.usersStatus.observe(this, { status ->
-            when (status) {
-                BaseViewModel.SUCCESS -> {
-                    if(currPage > 1){
-                        setAdapterLoading(false)
-                    }
-                    userAdapter.listItem.addAll(viewModel.getUsers())
-                    userAdapter.notifyDataSetChanged()
-                }
-                BaseViewModel.ERROR -> {
-                    showErrorBottomSheet(
-                        description = viewModel.getMessage(),
-                        isCancelable = false,
-                        callback = {
-                            if(currPage > 1){
-                                setAdapterLoading(false)
-                                --currPage
-                                //Log.d("<TESTING>", "LIMIT")
-                            }
-                        }
-                    )
-                }
-                BaseViewModel.LIMIT -> {
-                    showErrorBottomSheet(
-                        description = viewModel.getMessage(),
-                        isCancelable = false,
-                         callback = {
-                             if(currPage > 1){
-                                 setAdapterLoading(false)
-                                 --currPage
-                                 //Log.d("<TESTING>", "LIMIT")
-                             }
-                         }
-                    )
-                }
-            }
-        }) */
-
-        /* binding.rvGithubUser.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-
-                if (dy < 0 || dy == 0 || lastSearchedString.isEmpty())
-                    return
-
-                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val lastVisibleViewHolder = linearLayoutManager.findLastVisibleItemPosition() + 1
-                val hasReachedLastTwoViewHolder: Boolean = lastVisibleViewHolder >= userAdapter.listItem.size
-
-                //if(hasReachedLastTwoViewHolder)
-                    //Log.d("<TESTING>", "$isHasReachBottomOnce $hasReachedLastTwoViewHolder $lastVisibleViewHolder ${userAdapter.listItem.size} $currPage")
-
-                if (!isHasReachBottomOnce && hasReachedLastTwoViewHolder) {
-
-                    if(lastVisibleViewHolder % 2 != 0)
-                        Log.d("<TESTING>", "$isHasReachBottomOnce $hasReachedLastTwoViewHolder $lastVisibleViewHolder ${userAdapter.listItem.size} $currPage")
-                    
-                    setAdapterLoading(true)
-                    viewModel.fetchListUser(lastSearchedString, ++currPage, perPage)
-                }
-
-                super.onScrolled(recyclerView, dx, dy)
-            }
-        }) */
 
         binding.etSerch.setOnEditorActionListener{ _, keyCode, _ ->
             if (keyCode == EditorInfo.IME_ACTION_SEARCH) {
-
                 val searchString = binding.etSerch.text.toString().trim()
-
                 if(searchString.isEmpty()){
-                    showErrorBottomSheet(
-                        getString(R.string.search_string_empty_title),
-                        getString(R.string.search_string_empty_dsc)
-                    )
-                    return@setOnEditorActionListener false
-                }
-
-                if((searchString == lastSearchedString) && userrAdapter.itemCount > 0 ){
-                    hideSoftKeyboard()
+                    showErrorBottomSheet(getString(R.string.search_string_empty_title), getString(R.string.search_string_empty_dsc))
                     return@setOnEditorActionListener false
                 }
 
                 resetData()
                 hideSoftKeyboard()
-                lastSearchedString = searchString
+                viewModel.searchPhoto(searchString)
 
-                viewModel.searchPhoto(lastSearchedString)
                 return@setOnEditorActionListener true
             }
             false
@@ -170,51 +95,71 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
     }
 
     private fun resetData() {
-        userrAdapter.submitData(lifecycle, PagingData.empty())
-        userrAdapter.notifyDataSetChanged()
-        currPage = 1
+        userAdapter.submitData(lifecycle, PagingData.empty())
+        userAdapter.notifyDataSetChanged()
     }
 
-    /* private fun setAdapterLoading(isLoading: Boolean) {
-        isHasReachBottomOnce = isLoading
-        if(isLoading){
-            userAdapter.listItem.add(null)
-            userAdapter.notifyItemInserted(userAdapter.listItem.size - 1)
-        }
-        else{
-            userAdapter.listItem.removeAt(userAdapter.listItem.size - 1)
-            userAdapter.notifyItemRemoved(userAdapter.listItem.size - 1)
-        }
-    } */
-
-    /* private fun setupRecyclerView(){
-         binding.rvGithubUser.apply {
-            adapter = userAdapter
+    private fun setupRecyclerView(){
+        binding.rvGithubUser.apply {
+            adapter = userAdapter.withLoadStateHeaderAndFooter(
+                header = FooterAdapter(
+                    { userAdapter.retry() },
+                    { loadState -> showScrollError(loadState) }
+                ),
+                footer = FooterAdapter(
+                    { userAdapter.retry() },
+                    { loadState -> showScrollError(loadState) }
+                )
+            )
             layoutManager = LinearLayoutManager(
                 this@MainActivity,
                 LinearLayoutManager.VERTICAL,
                 false
             )
-        }
-    }*/
-
-    private fun setupRecyclerView2(){
-
-        binding.rvGithubUser.apply {
-            adapter = userrAdapter.withLoadStateHeaderAndFooter(
-                header = FooterAdapter {
-                    userrAdapter.retry()
-                },
-                footer = FooterAdapter {
-                    userrAdapter.retry()
-                }
-            )
-            layoutManager = LinearLayoutManager(
-                this@MainActivity,
-                LinearLayoutManager.VERTICAL,
-                false,
-            )
             setHasFixedSize(true)
+        }
+    }
+
+    private fun showSearchError(loadState: LoadState){
+        when (val err = (loadState as LoadState.Error).error) {
+            is HttpException -> {
+                when (err.code()) {
+                    403 -> showErrorBottomSheet(title = getString(R.string.error_403_title),
+                        description = getString(R.string.error_403_dsc))
+                    else -> showErrorBottomSheet(description = err.message.toString(), isCancelable = true,)
+                }
+            }
+            is IOException -> showErrorBottomSheet(title = getString(R.string.error_unknown_host_connection_title),
+                description = getString(R.string.error_unknown_host_connection_dsc))
+            else -> showErrorBottomSheet()
+        }.also {
+            showLoading(false)
+        }
+    }
+
+    private fun showScrollError(loadState: LoadState) {
+        when (val err = (loadState as LoadState.Error).error) {
+            is HttpException -> {
+                when (err.code()) {
+                    403 -> Toast.makeText(this, getString(R.string.error_403_dsc), Toast.LENGTH_SHORT).show()
+                    else -> Toast.makeText(this, err.message().toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
+            is IOException -> Toast.makeText(this, getString(R.string.error_unknown_host_connection_dsc), Toast.LENGTH_SHORT).show()
+            else -> Toast.makeText(this, resources.getString(R.string.text_error_title), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getErrorMsg(loadState: LoadState): String {
+        return when (val err = (loadState as LoadState.Error).error) {
+            is HttpException -> {
+                when (err.code()) {
+                    403 -> getString(R.string.error_403_dsc)
+                    else -> err.message().toString()
+                }
+            }
+            is IOException -> getString(R.string.error_unknown_host_connection_dsc)
+            else -> resources.getString(R.string.text_error_title)
         }
     }
 

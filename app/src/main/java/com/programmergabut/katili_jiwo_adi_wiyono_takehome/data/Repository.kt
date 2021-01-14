@@ -8,6 +8,6 @@ import kotlinx.coroutines.Deferred
 
 interface Repository {
 
-    //suspend fun fetchUsers(query: String, page: String, per_page: String): Deferred<UsersResponse>
-    fun getSearchResult(query: String): LiveData<PagingData<Item>>
+    suspend fun fetchUsers(query: String, page: String, per_page: String): Deferred<UsersResponse>
+    //fun getSearchResult(query: String): LiveData<PagingData<Item>>
 }

@@ -2,16 +2,24 @@
     <string name="app_name">katili_jiwo_adi_wiyono_takehome</string>
     <string name="search_github_users">Search Github users</string>
 
-    <!--Message-->
+    <!-- Message -->
+    <string name="user_not_found">User not found</string>
+
+    <!--Bottom Sheet Message-->
     <string name="text_error_title">Error Occurred</string>
     <string name="text_error_dsc">Sorry.. there is an error, please try again</string>
     <string name="search_string_empty_title">Search string is empty</string>
     <string name="search_string_empty_dsc">search string cannot be empty</string>
-    
-    <!-- bottom sheet -->
+    <string name="error_403_title">Api Rate Limit Exceeded</string>
+    <string name="error_403_dsc">Api rate limit exceeded, please wait for a minute to try another request</string>
+    <string name="error_unknown_host_connection_title">There is No Connection</string>
+    <string name="error_unknown_host_connection_dsc">Please check your Internet connection and try again </string>
+
+    <!--  -->
     <string name="oke">Oke</string>
+    <string name="retry">Retry</string>
 
     <!-- glide -->
     <string name="user_blank_profile">user_blank_profile</string>
-    <string name="retry">Retry</string>
+
 </resources>

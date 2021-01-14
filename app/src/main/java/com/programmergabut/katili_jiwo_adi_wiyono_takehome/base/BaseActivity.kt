@@ -68,12 +68,12 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 
-
     protected fun showErrorBottomSheet(
         title: String = resources.getString(R.string.text_error_title),
         description: String = resources.getString(R.string.text_error_dsc),
         isCancelable: Boolean = true,
         isFinish: Boolean = false,
+        buttonText: String = resources.getString(R.string.oke),
         callback: (() -> Unit)? = null
     ) {
 
@@ -85,6 +85,7 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
         dialogBinding.apply {
             tvTitle.text = title
             tvDesc.text = description
+            btnOk.text = buttonText
         }
 
         dialog.apply {
@@ -97,7 +98,6 @@ abstract class BaseActivity<DB: ViewDataBinding, VM: ViewModel>(
         dialogBinding.btnOk.setOnClickListener {
             if(isFinish)
                 finish()
-
             callback?.invoke()
             dialog.dismiss()
         }
