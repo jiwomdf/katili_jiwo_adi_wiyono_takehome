@@ -1,5 +1,9 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter
 
+/*
+   Created by Katili Jiwo A.W. 13 January 2021
+*/
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -53,4 +57,5 @@ class FooterAdapter(
             }
         }
     }
+
 }

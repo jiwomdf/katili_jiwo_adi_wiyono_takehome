@@ -1,5 +1,8 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteentity.users
 
+/*
+   Created by Katili Jiwo A.W. 11 January 2021
+*/
 
 import com.google.gson.annotations.SerializedName
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.base.BaseResponse

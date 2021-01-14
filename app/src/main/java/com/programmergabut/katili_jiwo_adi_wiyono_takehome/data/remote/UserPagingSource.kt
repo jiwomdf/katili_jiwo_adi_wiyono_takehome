@@ -1,11 +1,16 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote
 
+/*
+   Created by Katili Jiwo A.W. 13 January 2021
+*/
+
 import androidx.paging.PagingSource
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.Constant.Companion.GITHUB_API_PER_PAGE
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.Constant.Companion.GITHUB_API_STARTING_PAGE
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.Repository
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.data.remote.remoteentity.users.Item
 
+const val RESPONSE_NULL_MSG = "response items is null"
 class UserPagingSource(
     private val repository: Repository,
     private val query: String
@@ -16,8 +21,8 @@ class UserPagingSource(
         val perPage = GITHUB_API_PER_PAGE
 
         return try {
-            val response = repository.fetchUsers(query, position.toString(), perPage.toString()).await()
-            when(response.statusResponse.toInt()){
+            val response = repository.fetchUsersAsync(query, position.toString(), perPage.toString()).await()
+            when(response.status.toInt()){
                 1 -> {
                     if(response.items != null){
                         val users = if(response.items.isEmpty()) emptyList() else response.items
@@ -28,7 +33,7 @@ class UserPagingSource(
                         )
                     }
                     else{
-                        LoadResult.Error(Exception("response items is null"))
+                        LoadResult.Error(Exception(RESPONSE_NULL_MSG))
                     }
                 }
                 -1 -> {

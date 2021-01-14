@@ -1,5 +1,9 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.di
 
+/*
+   Created by Katili Jiwo A.W. 11 January 2021
+*/
+
 import android.content.Context
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager

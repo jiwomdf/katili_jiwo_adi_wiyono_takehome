@@ -1,8 +1,8 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view
 
 /*
-    Created by Katili Jiwo A.W. 11 January 2021
- */
+   Created by Katili Jiwo A.W. 11 January 2021
+*/
 
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
@@ -19,7 +19,6 @@ import com.programmergabut.katili_jiwo_adi_wiyono_takehome.view.adapter.UserAdap
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.io.IOException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,6 +29,7 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
 
     @Inject lateinit var userAdapter: UserAdapter
     private var lastErrMsg = ""
+    private var isFromSearching = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,28 +44,26 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
         })
 
         userAdapter.addLoadStateListener { loadState ->
-
             if(loadState.source.refresh is LoadState.NotLoading &&
                 loadState.append.endOfPaginationReached &&
                 userAdapter.itemCount < 1){
-                binding.rvGithubUser.isVisible = false
-                binding.tvInfo.isVisible = true
-
+                setContentComponentVisibility(isRvGithubVisible = false)
                 if(lastErrMsg.isEmpty())
                     binding.tvInfo.text = getString(R.string.user_not_found)
                 else
                     binding.tvInfo.text = lastErrMsg
             }
             else{
-                binding.rvGithubUser.isVisible = true
-                binding.tvInfo.isVisible = false
+                setContentComponentVisibility(isRvGithubVisible = true)
             }
 
-            when(loadState.source.refresh){
+            when (loadState.source.refresh) {
                 is LoadState.Loading -> showLoading(true)
                 is LoadState.NotLoading -> {
-                    lastErrMsg = ""
                     showLoading(false)
+                    isFromSearching = false
+                    if(userAdapter.itemCount < 1)
+                        lastErrMsg = ""
                 }
                 is LoadState.Error -> {
                     resetData()
@@ -73,7 +71,6 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
                     lastErrMsg = getErrorMsg((loadState.source.refresh as LoadState.Error))
                 }
             }
-
         }
 
         binding.etSerch.setOnEditorActionListener{ _, keyCode, _ ->
@@ -83,11 +80,10 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
                     showErrorBottomSheet(getString(R.string.search_string_empty_title), getString(R.string.search_string_empty_dsc))
                     return@setOnEditorActionListener false
                 }
-
                 resetData()
                 hideSoftKeyboard()
                 viewModel.searchPhoto(searchString)
-
+                isFromSearching = true
                 return@setOnEditorActionListener true
             }
             false
@@ -138,6 +134,8 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
     }
 
     private fun showScrollError(loadState: LoadState) {
+        if(isFromSearching)
+            return
         when (val err = (loadState as LoadState.Error).error) {
             is HttpException -> {
                 when (err.code()) {
@@ -160,6 +158,17 @@ class MainActivity: BaseActivity<ActivityMainBinding, UserViewModel>(
             }
             is IOException -> getString(R.string.error_unknown_host_connection_dsc)
             else -> resources.getString(R.string.text_error_title)
+        }
+    }
+
+    private fun setContentComponentVisibility(isRvGithubVisible: Boolean){
+        if(isRvGithubVisible){
+            binding.rvGithubUser.isVisible = true
+            binding.tvInfo.isVisible = false
+        }
+        else{
+            binding.rvGithubUser.isVisible = false
+            binding.tvInfo.isVisible = true
         }
     }
 

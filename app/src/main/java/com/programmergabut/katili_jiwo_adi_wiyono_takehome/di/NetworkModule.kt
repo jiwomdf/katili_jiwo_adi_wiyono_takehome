@@ -1,5 +1,9 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.di
 
+/*
+   Created by Katili Jiwo A.W. 11 January 2021
+*/
+
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.programmergabut.katili_jiwo_adi_wiyono_takehome.BuildConfig
@@ -20,7 +24,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAladhanEndPoint() = BuildConfig.BASE_URL_GITHUB
+    fun provideGithubAPIURL() = BuildConfig.BASE_URL_GITHUB
 
     @Provides
     @Singleton
@@ -43,7 +47,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofitAladhan(BASE_URL: String, gsonConverterFactory: GsonConverterFactory,
+    fun provideRetrofitGithubAPI(BASE_URL: String, gsonConverterFactory: GsonConverterFactory,
                                okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)

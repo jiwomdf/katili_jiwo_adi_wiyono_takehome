@@ -1,5 +1,9 @@
 package com.programmergabut.katili_jiwo_adi_wiyono_takehome.view
 
+/*
+   Created by Katili Jiwo A.W. 12 January 2021
+*/
+
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.paging.*

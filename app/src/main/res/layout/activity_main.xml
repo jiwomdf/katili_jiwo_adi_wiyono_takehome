@@ -38,7 +38,8 @@
                 android:drawableStart="@drawable/ic_baseline_search_24"
                 android:drawablePadding="16dp"
                 android:hint="@string/search_github_users"
-                android:padding="16dp" />
+                android:padding="16dp"
+                android:autofillHints="@string/search_github_users" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:listitem="@layout/list_users"
-                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
@@ -60,10 +61,9 @@
                 android:id="@+id/tv_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:visibility="gone"
-                tools:text="User not found"
+                tools:text="@string/user_not_found"
                 tools:visibility="visible"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
